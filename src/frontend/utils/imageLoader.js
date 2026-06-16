@@ -5,7 +5,7 @@
   * During building and serverside rendering, these are undefined so we use some conditionals and default values.
   */
 let hostname = "localhost";
-let port = 8080;
+let port = 8081;
 let protocol = "http";
 
 if (typeof window !== "undefined" && window.location) {

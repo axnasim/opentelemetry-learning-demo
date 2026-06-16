@@ -64,7 +64,7 @@ RUN mix release
 FROM docker.io/debian:bullseye-20251117-slim@sha256:530a3348fc4b5734ffe1a137ddbcee6850154285251b53c3425c386ea8fac77b AS final
 
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends libstdc++6 openssl libncurses5 locales ca-certificates \
+  && apt-get install -y --no-install-recommends libstdc++6 openssl libncurses5 locales ca-certificates netcat-openbsd \
   && rm -rf /var/lib/apt/lists/*
 
 # Set the locale
@@ -83,6 +83,7 @@ ENV MIX_ENV="prod"
 
 # Only copy the final release from the build stage
 COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/flagd_ui ./
+RUN chmod +x /app/bin/server
 
 EXPOSE ${FLAGD_UI_PORT}
 
