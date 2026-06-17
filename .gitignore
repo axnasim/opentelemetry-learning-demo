@@ -47,7 +47,6 @@ composer.lock
 /src/fraud-detection/src/main/proto
 /src/payment/demo.proto
 /src/shipping/proto/
-/src/currency/proto
 /src/frontend/pb
 
 # Otel Demo specific
