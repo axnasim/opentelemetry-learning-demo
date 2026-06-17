@@ -274,6 +274,11 @@ func main() {
 			logger.Error(err.Error())
 		}
 	}()
+
+	<-ctx.Done()
+
+	srv.GracefulStop()
+	logger.Info("Checkout gRPC server stopped")
 }
 
 func mustMapEnv(target *string, envKey string) {
