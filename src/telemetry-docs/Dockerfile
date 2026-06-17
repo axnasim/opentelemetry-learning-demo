@@ -45,7 +45,7 @@ RUN /weaver/weaver registry package \
 # ... (Leave Stage 2 and Stage 3 exactly as they are) ...
 
 # Stage 2: Build static site
-FROM docker.io/library/python:3.14.5-slim-bookworm@sha256:a9bee15510a364124aa24692899d269835683b883de42f7ebec8c293cf679ccb AS site-builder
+FROM docker.io/library/python:3.14.6-slim-bookworm@sha256:a70519002c49552ea0a853de47599cf40479b001bd7a624f1112eaf44dcaccc7 AS site-builder
 
 WORKDIR /app
 
@@ -60,7 +60,7 @@ RUN mv /app/docs/mkdocs.yml /app/mkdocs.yml && \
     mkdocs build --clean
 
 # Stage 3: Serve with nginx (tiny!)
-FROM docker.io/nginxinc/nginx-unprivileged:1.31.1-alpine3.23-otel@sha256:74e4659d671745bead1c3afbad7ef4a040e512bd3a144468f8c4607bc01dc49d
+FROM docker.io/nginxinc/nginx-unprivileged:1.31.1-alpine3.23-otel@sha256:3c98be35b8cdf48f55f5ed0b8e3334ce7009a862815221d8329b4c63bc9adbc6
 
 USER 101
 
