@@ -78,10 +78,14 @@ namespace cart.healthcheck
 
             // You can implement service-specific health checks here
             // This example checks a specific service
-            var serviceHealth = await _healthCheckService.CheckHealthAsync(registration => MatchesService(registration, request.Service), cancellationToken);
+            var healthReport = await _healthCheckService.CheckHealthAsync(registration => MatchesService(registration, request.Service), cancellationToken);
+            if (!healthReport.Entries.TryGetValue(request.Service, out var healthEntry))
+            {
+                return new HealthCheckResponse { Status = HealthCheckResponse.Types.ServingStatus.Unknown };
+            }
             return new HealthCheckResponse
             {
-                Status = ConvertToGrpcStatus(serviceHealth.Entries[request.Service].Status)
+                Status = ConvertToGrpcStatus(healthEntry.Status)
             };
         }
 
