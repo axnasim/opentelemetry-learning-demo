@@ -1,6 +1,9 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
 
+# Reusable workflow for building the React Native Android application.
+# It leverages a Docker-based Android build environment so that 
+# developers don't need the Android SDK installed locally for CI validation.
 name: React Native build
 
 on:

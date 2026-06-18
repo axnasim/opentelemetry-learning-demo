@@ -1,6 +1,9 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
 
+# Evaluates the repository against the OpenSSF Scorecard best practices.
+# This provides a security score for supply chain health, covering factors 
+# like branch protection, signed commits, and dependency management.
 name: OSSF Scorecard
 
 on:

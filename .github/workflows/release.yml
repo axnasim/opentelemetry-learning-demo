@@ -1,5 +1,8 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
+
+# Triggered when a new GitHub Release is published. 
+# It builds production images and tags them with the release version.
 name: "Build and Publish"
 
 on:
@@ -11,6 +14,7 @@ permissions:
 
 jobs:
   build_and_push_images:
+    # Delegates to the reusable component-build-images workflow.
     permissions:  # required by the reusable workflow
       contents: read  # required by the component-build-images reusable workflow
       packages: write  # required to push built images to GHCR

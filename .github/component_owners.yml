@@ -1,6 +1,10 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
-# this file is used by .github/workflows/assign-reviewers.yml
+
+# This file defines the mapping of microservice directories to their respective maintainers.
+# It is consumed by the '.github/workflows/assign-reviewers.yml' workflow to automatically
+# request reviews from the correct people when specific components are modified.
+
 components:
   src/ad:
     - jack-berg

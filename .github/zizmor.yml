@@ -2,8 +2,12 @@
 # SPDX-License-Identifier: Apache-2.0
 
 rules:
+  # Validates that dependabot.yml has a cooldown of at least 3 days.
+  # This prevents immediate updates and gives maintainers time to react to potential issues.
   dependabot-cooldown:
     config:
       days: 3
+  # Disables the audit for secrets used directly in scripts rather than env blocks.
+  # While using 'env' is a best practice to prevent leaking secrets in logs, this is disabled to avoid false positives.
   secrets-outside-env:
     disable: true

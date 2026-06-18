@@ -1,6 +1,9 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
 
+# FOSSA Scanning: Automates license compliance and dependency vulnerability analysis.
+# This ensures all third-party libraries used in the demo are compatible with 
+# the Apache-2.0 license and free of known security flaws.
 name: FOSSA scanning
 
 on:
@@ -18,6 +21,8 @@ concurrency:
 jobs:
   fossa:
     name: FOSSA scan
+    # Only run on the main repository to protect the API secret and 
+    # focus auditing on the authoritative codebase.
     if: ${{ !github.event.repository.fork }}
     runs-on: ubuntu-latest
     steps:
@@ -26,6 +31,7 @@ jobs:
         with:
           persist-credentials: false
 
+      # Executes the scan and uploads results to the FOSSA dashboard.
       - name: Run FOSSA scan
         uses: fossas/fossa-action@ff70fe9fe17cbd2040648f1c45e8ec4e4884dcf3  # v1.9.0
         with:

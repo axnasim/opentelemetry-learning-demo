@@ -3,7 +3,11 @@
 
 # Two-stage build: Generate service-centric Markdown with Weaver, then serve with mkdocs
 
-# Stage 1: Generate Markdown files from telemetry schema using Weaver
+# -----------------------------------------------------------------------------
+# Stage 1: Registry Processing
+# Uses Weaver to transform raw OTel YAML schemas into Markdown documentation
+# and a dynamically generated mkdocs.yml configuration.
+# -----------------------------------------------------------------------------
 FROM docker.io/otel/weaver:v0.23.0@sha256:7984ecb55b859eb3034ae9d836c4eeda137e2bdd0873b7ba2bb6c3d24d6ff457 AS registry-builder
 
 # Switch to root temporarily to configure workspace permissions
@@ -42,24 +46,30 @@ RUN /weaver/weaver registry package \
     --output=/workspace/docs/schema \
     --v2
 
-# ... (Leave Stage 2 and Stage 3 exactly as they are) ...
-
-# Stage 2: Build static site
-FROM docker.io/library/python:3.14.5-slim-bookworm@sha256:a9bee15510a364124aa24692899d269835683b883de42f7ebec8c293cf679ccb AS site-builder
+# -----------------------------------------------------------------------------
+# Stage 2: Documentation Generation
+# Uses MkDocs (Python) to convert Markdown artifacts into a static HTML site.
+# -----------------------------------------------------------------------------
+FROM docker.io/library/python:3.13-slim-bookworm@sha256:a9bee15510a364124aa24692899d269835683b883de42f7ebec8c293cf679ccb AS site-builder
 
 WORKDIR /app
 
 COPY src/telemetry-docs/requirements.txt /app/requirements.txt
 
+# Use a stable Python environment for MkDocs generation
 RUN pip install --no-cache-dir --require-hashes -r requirements.txt
 
 COPY src/telemetry-docs/mkdocs.yml /app/mkdocs-base.yml
+# Copy the Markdown files AND the generated mkdocs.yml from Stage 1
 COPY --from=registry-builder /workspace/docs /app/docs
 
 RUN mv /app/docs/mkdocs.yml /app/mkdocs.yml && \
     mkdocs build --clean
 
-# Stage 3: Serve with nginx (tiny!)
+# -----------------------------------------------------------------------------
+# Stage 3: Production
+# Minimal Nginx server to host the static assets.
+# -----------------------------------------------------------------------------
 FROM docker.io/nginxinc/nginx-unprivileged:1.31.1-alpine3.23-otel@sha256:74e4659d671745bead1c3afbad7ef4a040e512bd3a144468f8c4607bc01dc49d
 
 USER 101

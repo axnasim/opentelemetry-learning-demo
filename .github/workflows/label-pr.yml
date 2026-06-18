@@ -1,15 +1,22 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
-# adds a label to a pull request if certain files are changed
+
+# This workflow automatically applies labels to Pull Requests based on which files were modified.
+# It helps maintainers identify if documentation or Helm chart updates are required
+# when core configuration or infrastructure files are changed.
 name: Label Pull Requests
 
 on:
+  # pull_request_target allows the workflow to run with 'write' permissions 
+  # to apply labels even for PRs coming from forks.
   pull_request_target:  # zizmor: ignore[dangerous-triggers] needed to label PRs from forks without checking out PR code
     types: [opened, synchronize, reopened]
 
 permissions:
   contents: read
 
+# Limits concurrency so that multiple pushes to the same PR don't result 
+# in redundant labeling jobs.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
@@ -27,6 +34,7 @@ jobs:
         with:
           persist-credentials: false
 
+      # Defines path-based filters to determine which labels to apply.
       - name: Check for changed files
         id: file_changes
         uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d  # v4.0.1
@@ -45,28 +53,20 @@ jobs:
               - 'src/postgresql/**'
               - 'src/prometheus/**'
 
-      - name: Add docs-update-required label
-        if: steps.file_changes.outputs.docsUpdateRequired == 'true'
+      # Uses a script to apply the labels via the GitHub API.
+      - name: Apply labels
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
         with:
           script: |
-            const issue_number = context.issue.number;
-            github.rest.issues.addLabels({
-              issue_number: issue_number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              labels: ['docs-update-required']
-            })
-
-      - name: Add helm-update-required label
-        if: steps.file_changes.outputs.helmUpdateRequired == 'true'
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
-        with:
-          script: |
-            const issue_number = context.issue.number;
-            github.rest.issues.addLabels({
-              issue_number: issue_number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              labels: ['helm-update-required']
-            })
+            const labels = [];
+            if ('${{ steps.file_changes.outputs.docsUpdateRequired }}' === 'true') labels.push('docs-update-required');
+            if ('${{ steps.file_changes.outputs.helmUpdateRequired }}' === 'true') labels.push('helm-update-required');
+            
+            if (labels.length > 0) {
+              github.rest.issues.addLabels({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: labels
+              });
+            }

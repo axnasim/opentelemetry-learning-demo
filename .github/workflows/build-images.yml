@@ -1,5 +1,8 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
+
+# A simple trigger workflow that calls the reusable component-build-images workflow
+# whenever code is pushed to the main branch or a PR is updated.
 name: Test image generation
 
 on:
@@ -19,3 +22,4 @@ jobs:
       packages: write  # required to push built images to GHCR
     if: ${{ !github.event.repository.fork }}
     uses: ./.github/workflows/component-build-images.yml
+    # Note: No 'with' section means it uses the default inputs defined in the reusable workflow.

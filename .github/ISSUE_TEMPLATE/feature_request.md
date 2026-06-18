@@ -24,6 +24,10 @@ What would you like to happen instead? What is the expected behavior?
 
 Which alternative solutions or features have you considered?
 
+**Implementation Plan**
+
+If you intend to submit a Pull Request for this feature, please confirm you have reviewed the [Contributing Guide](../../CONTRIBUTING.md) and the [OTel Instrumentation Patterns](../../CODEBASE.md#otel-instrumentation-pattern).
+
 ## Additional Context
 
 Feel free to add any other context about the feature request here.

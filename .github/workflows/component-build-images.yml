@@ -1,6 +1,9 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
 
+# Reusable workflow for building and optionally pushing microservice images.
+# It uses a matrix strategy to build all demo components in parallel and
+# includes optimized logic to skip builds for services that haven't changed.
 name: Component build images
 
 on:
@@ -43,6 +46,8 @@ permissions:
 jobs:
   protobufcheck:
     name: Check protobuf generated files
+    # Ensures that the Protobuf stubs in the repo are in sync with the .proto definitions.
+    # This prevents merging PRs where developers forgot to run 'make generate-protobuf'.
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -56,6 +61,8 @@ jobs:
 
   build_and_push_images:
     name: Build and push ${{ matrix.file_tag.tag_suffix }} image
+    # The build matrix defines every microservice in the demo, allowing 
+    # GitHub Actions to build them all in parallel.
     runs-on: ubuntu-latest
     needs: protobufcheck
 
@@ -69,6 +76,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # Image Strategy:
+        # 1. Use 'Distroless' for compiled languages (Go, Rust, Java) to minimize size and attack surface.
+        # 2. Use 'Alpine' for interpreted languages (Python, Ruby) for smallest size. 
+        #    NOTE: Python 'slim' variants are preferred for faster builds (pip wheels) and 
+        #    better glibc compatibility for complex networking libraries like gRPC.
+        # 3. Use 'Multi-stage builds' in all Dockerfiles to keep build tools out of final images.
+        # 4. Set 'setup-qemu: true' only for platforms requiring emulation to speed up native builds.
         file_tag:
           - file: ./src/accounting/Dockerfile
             tag_suffix: accounting
@@ -175,6 +189,8 @@ jobs:
           persist-credentials: false
       - name: Load environment variables from .env file
         run: |
+          # Injects variables from .env into GITHUB_ENV so they can be 
+          # passed as build-args to the Docker builds.
           if [ -f .env ]; then
             # Filter out comments and empty lines, then add each variable to $GITHUB_ENV
             grep -vE '^\s*#|^\s*$' .env | while read -r line; do
@@ -186,6 +202,10 @@ jobs:
           fi
       - name: Check for changes and set push options
         id: check_changes
+        # Optimization Logic:
+        # Compares the current branch against the base branch to see if files in the 
+        # service's directory have changed. If no changes are found, the build is skipped
+        # to save time and resources.
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
@@ -303,3 +323,14 @@ jobs:
             ${{ inputs.ghcr_repo }}:latest-${{ matrix.file_tag.tag_suffix }}
           cache-from: type=gha
           cache-to: type=gha
+
+      - name: Run Trivy vulnerability scanner
+        if: steps.check_changes.outputs.skip == 'false'
+        uses: aquasecurity/trivy-action@18f2510ee396bbf4006229506d447774c58ce502 # v0.28.0
+        with:
+          image-ref: ${{ inputs.ghcr_repo }}:${{ inputs.version }}-${{ matrix.file_tag.tag_suffix }}
+          format: 'table'
+          exit-code: '1' # Fail the build if vulnerabilities are found
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'

@@ -1,6 +1,9 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
 
+# Reusable workflow to run 'zizmor', which audits other GitHub Action 
+# workflows for security vulnerabilities and best practices.
+# It is called by the 'Checks' workflow.
 name: zizmor scan
 
 on:

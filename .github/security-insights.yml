@@ -1,6 +1,9 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
 
+# Security Insights Manifest: Provides machine-readable metadata about the project's
+# security policies, maintainers, and auditing tools for external scanners.
+
 header:
   last-reviewed: '2026-06-11'
   last-updated: '2026-06-11'
@@ -10,6 +13,7 @@ header:
     This file contains the minimum information for https://github.com/open-telemetry/opentelemetry-demo.
 
 project:
+  # Project identity and administrative contacts
   name: OpenTelemetry Demo
   homepage: https://opentelemetry.io/docs/demo/
   administrators:
@@ -41,6 +45,7 @@ project:
         Active primary OpenTelemetry Demo repository. It contains the Astronomy Shop microservice demo,
         examples of OpenTelemetry instrumentation across several languages, and deployment assets for Docker and Kubernetes.
   vulnerability-reporting:
+    # Official policy for reporting security issues
     bug-bounty-available: false
     reports-accepted: true
     policy: https://opentelemetry.io/docs/security/security-response/
@@ -107,6 +112,7 @@ repository:
     attestations: []
 
   security:
+    # Summary of active security tools and their integration points
     assessments:
       self:
         comment: No formal self-assessment yet.

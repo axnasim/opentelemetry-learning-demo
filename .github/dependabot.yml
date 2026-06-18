@@ -1,6 +1,11 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
+
+# Dependabot configuration for automated dependency updates.
 version: 2
+
+# Multi-ecosystem groups allow us to bundle updates for a specific service directory
+# into a single PR, even if they use different technologies (e.g., Go and Docker).
 multi-ecosystem-groups:
   src-accounting:
     schedule:
@@ -92,7 +97,10 @@ multi-ecosystem-groups:
       interval: "weekly"
       day: "tuesday"
       time: "03:50"
+
 updates:
+  # Global/Tooling Updates
+  # These use a 'cooldown' to prevent immediate noise after a release.
   - package-ecosystem: "github-actions"
     cooldown:
       default-days: 3
@@ -142,6 +150,11 @@ updates:
       interval: "weekly"
       day: "tuesday"
       time: "03:50"
+
+  # Per-Service Updates
+  # Note: The 'cooldown' property is currently incompatible with 'multi-ecosystem-group'.
+  # We use the 'zizmor: ignore' comment to bypass the security linter's cooldown check
+  # in favor of having consolidated PRs per microservice.
   - package-ecosystem: "nuget"  # zizmor: ignore[dependabot-cooldown] cooldown prevents multi-ecosystem batching
     directories:
       - "/src/accounting/**"

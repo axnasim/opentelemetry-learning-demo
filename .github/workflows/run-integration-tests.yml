@@ -17,6 +17,7 @@ concurrency:
 jobs:
   run_tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     name: "Run CI"
     if: github.event.review.state == 'APPROVED'
     steps:
@@ -27,3 +28,6 @@ jobs:
       - name: Run tracetesting
         run: |
           make build && docker system prune -f && make run-tracetesting
+      - name: Stop demo
+        if: always()
+        run: make stop

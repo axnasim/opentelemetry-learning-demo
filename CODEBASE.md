@@ -53,9 +53,9 @@ GitHub-specific automation. Not part of the running application.
 | `component_owners.yml` | Per-service owner list used by the reviewer assignment workflow |
 | `dependabot.yml` | Configures Dependabot to auto-open PRs for dependency updates per ecosystem |
 | `PULL_REQUEST_TEMPLATE.md` | Pre-fills PR description with a checklist contributors must follow |
-| `ISSUE_TEMPLATE/bug_report.md` | Bug report form |
-| `ISSUE_TEMPLATE/feature_request.md` | Feature request form |
-| `ISSUE_TEMPLATE/question.md` | Question form |
+| `ISSUE_TEMPLATE/bug_report.md` | Standardized form for reporting technical issues with reproduction steps and logs |
+| `ISSUE_TEMPLATE/feature_request.md` | Template for proposing new services, features, or instrumentation examples |
+| `ISSUE_TEMPLATE/question.md` | Support template often used to redirect users to Slack or Discussions |
 | `security-insights.yml` | OpenSSF security insights metadata |
 | `zizmor.yml` | Zizmor workflow auditor config |
 

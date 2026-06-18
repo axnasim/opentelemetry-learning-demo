@@ -1,6 +1,8 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
 
+# Performs GitHub CodeQL semantic analysis to find security vulnerabilities
+# across the multiple languages used in the Astronomy Shop demo.
 name: CodeQL analysis
 
 on:
@@ -68,6 +70,7 @@ jobs:
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
+          # Security-extended enables more thorough (and potentially noisier) checks.
           queries: security-extended
 
       - name: Build checkout service

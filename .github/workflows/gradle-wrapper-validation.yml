@@ -1,5 +1,8 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
+
+# Validates that the Gradle wrapper (gradlew) matches the official checksums.
+# This is a security measure to prevent supply chain attacks via malicious build binaries.
 name: Gradle wrapper validation
 on:
   pull_request:

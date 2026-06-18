@@ -1,18 +1,22 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
-# assigns reviewers to pull requests in a similar way as CODEOWNERS, but doesn't require reviewers
-# to have write access to the repository
-# see .github/component_owners.yaml for the list of components and their owners
+
+# This workflow automatically requests reviews from domain experts when a Pull Request
+# modifies specific services or components. It uses .github/component_owners.yaml
+# to map directory paths to the GitHub handles of maintainers.
 name: Assign reviewers
 
 on:
-  # pull_request_target is needed instead of just pull_request
-  # because repository write permission is needed to assign reviewers
+  # pull_request_target is used so the workflow runs in the context of the base branch.
+  # This is critical for security: it allows the workflow to have the 'write' permissions
+  # needed to assign reviewers, even if the PR comes from a fork that would otherwise
+  # only have 'read' access.
   pull_request_target:  # zizmor: ignore[dangerous-triggers] needed to request reviewers on PRs from forks without checking out PR code
 
 permissions:
   contents: read
 
+# Ensures that only one instance of this workflow runs per PR at a time.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
@@ -21,12 +25,16 @@ jobs:
   assign-reviewers:
     name: Assign reviewers
     permissions:
-      pull-requests: write  # required for assigning reviewers to PRs
+      pull-requests: write  # Explicitly granted to allow the action to update PR metadata
+    # Skip this job if the event itself is coming from a fork (rare for pull_request_target)
+    # to ensure it only runs in the authoritative repository context.
     if: ${{ !github.event.repository.fork }}
     runs-on: ubuntu-latest
     steps:
       - name: Request component owner reviews
         uses: dyladan/component-owners@7ff2b343629407c4dbe1c28ae66f55f723543d2b  # v0.2.0
         with:
-          # using this action to request review only (not assignment)
+          config-file: .github/component_owners.yml
+          # Configures the action to request a review rather than assigning the PR
+          # to the owner as a 'task'. This keeps the assignee field free for the actual author.
           assign-owners: false

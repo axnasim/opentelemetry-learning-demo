@@ -3,6 +3,8 @@
 # Syntax: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
 # Github Actions Stale: https://github.com/actions/stale
 
+# Automates technical debt management by identifying and closing 
+# inactive Pull Requests that haven't seen activity for 7 days.
 name: "Close stale pull requests"
 on:
   schedule:

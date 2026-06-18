@@ -1,5 +1,10 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
+
+# Primary CI Orchestrator
+# This workflow is the main entry point for Pull Request validation.
+# It runs linting, sanity checks, and calls reusable workflows for 
+# building images and security scanning.
 name: Checks
 
 on:
@@ -14,6 +19,9 @@ on:
 permissions:
   contents: read
 
+env:
+  WEAVER_VERSION: v0.23.0
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
@@ -26,7 +34,7 @@ jobs:
       packages: write  # required to push built images to GHCR
     uses: ./.github/workflows/component-build-images.yml
     with:
-      push: ${{ github.event_name == 'push' }}
+      push: ${{ github.event_name == 'push' }}  
       force_build: ${{ github.event_name == 'push' }}
       # Use a non-release tag for PR builds; tags are not pushed when push=false.
       version: ${{ github.event_name == 'push' && 'main' || 'dev' }}
@@ -42,6 +50,11 @@ jobs:
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
         with:
           persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
       - name: Install dependencies
         run: npm ci
       - name: Run markdownlint
@@ -59,6 +72,7 @@ jobs:
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
         with:
           python-version: '3.x'
+          cache: 'pip'
       - name: Install yamllint
         run: make install-yamllint
       - name: Run yamllint
@@ -139,7 +153,8 @@ jobs:
         run: |
           docker run --rm \
             --mount "type=bind,source=${GITHUB_WORKSPACE_PATH}/telemetry-schema,target=/home/weaver/source,readonly" \
-            otel/weaver:v0.22.1 \
+            # Using pinned version from env to ensure consistency and smallest footprint
+            otel/weaver:${{ env.WEAVER_VERSION }} \
             registry check -r source
 
   check-react-native-changes:
