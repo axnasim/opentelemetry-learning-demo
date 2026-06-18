@@ -330,6 +330,17 @@ jobs:
         with:
           image-ref: ${{ inputs.ghcr_repo }}:${{ inputs.version }}-${{ matrix.file_tag.tag_suffix }}
           format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Run Trivy vulnerability scanner
+        if: steps.check_changes.outputs.skip == 'false'
+        uses: aquasecurity/trivy-action@18f2510ee396bbf4006229506d447774c58ce502 # v0.28.0
+        with:
+          image-ref: ${{ inputs.ghcr_repo }}:${{ inputs.version }}-${{ matrix.file_tag.tag_suffix }}
+          format: 'table'
           exit-code: '1' # Fail the build if vulnerabilities are found
           ignore-unfixed: true
           vuln-type: 'os,library'
