@@ -148,3 +148,5 @@ simulators and clearing all derived data:
 ```bash
 rm -rf ~/Library/Developer/Xcode/DerivedData
 ```
+
+See the [main README](../../README.md) for full setup and Docker Compose instructions.
