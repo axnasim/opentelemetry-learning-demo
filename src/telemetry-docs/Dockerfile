@@ -8,7 +8,7 @@
 # Uses Weaver to transform raw OTel YAML schemas into Markdown documentation
 # and a dynamically generated mkdocs.yml configuration.
 # -----------------------------------------------------------------------------
-FROM docker.io/otel/weaver:v0.23.0@sha256:7984ecb55b859eb3034ae9d836c4eeda137e2bdd0873b7ba2bb6c3d24d6ff457 AS registry-builder
+FROM docker.io/otel/weaver:v0.26.1@sha256:9094862c0ab261bdbcb079bb981f9a573b3659b130a6d2ab8616eca6ba37aaec AS registry-builder
 
 # Switch to root temporarily to configure workspace permissions
 USER root
@@ -50,7 +50,7 @@ RUN /weaver/weaver registry package \
 # Stage 2: Documentation Generation
 # Uses MkDocs (Python) to convert Markdown artifacts into a static HTML site.
 # -----------------------------------------------------------------------------
-FROM docker.io/library/python:3.13-slim-bookworm@sha256:a9bee15510a364124aa24692899d269835683b883de42f7ebec8c293cf679ccb AS site-builder
+FROM docker.io/library/python:3.14-slim-bookworm@sha256:c8137f4c460908c8763f281c8f22c431eb5c538514ba9553fc3a89c06b7cfb88 AS site-builder
 
 WORKDIR /app
 
@@ -70,7 +70,7 @@ RUN mv /app/docs/mkdocs.yml /app/mkdocs.yml && \
 # Stage 3: Production
 # Minimal Nginx server to host the static assets.
 # -----------------------------------------------------------------------------
-FROM docker.io/nginxinc/nginx-unprivileged:1.31.1-alpine3.23-otel@sha256:74e4659d671745bead1c3afbad7ef4a040e512bd3a144468f8c4607bc01dc49d
+FROM docker.io/nginxinc/nginx-unprivileged:1.31.2-alpine3.23-otel@sha256:1490cbf02ddba36ae75ef947b570166c805a178898ebfbc3bb889e7580820052
 
 USER 101
 
