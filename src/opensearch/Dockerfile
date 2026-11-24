@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Keep this tag aligned with src/grafana/provisioning/datasources/opensearch.yaml.
-FROM public.ecr.aws/opensearchproject/opensearch:3.5.0@sha256:dbb01641baadae5104e18acd888bf05e8fdd9af3567fd30624a76ba3e5a31dec
+FROM public.ecr.aws/opensearchproject/opensearch:3.10.0@sha256:02d6d6e40c820ae08233b60540aa5d3d9364d64e2dc724e38d6c8c794879b2a0
 
 USER 0
 
